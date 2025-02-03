@@ -9,7 +9,7 @@ This Python script automates the process of generating WireGuard client configur
 
 Prerequisites:
 + sudo apt install wireguard
-+ Testing was completed on a Kali Linux VM.
++ Testing was performed on a Kali Linux VM.
 
 It is particularly useful for network engineers who manage multiple WireGuard clients and want a streamlined way to:
 
