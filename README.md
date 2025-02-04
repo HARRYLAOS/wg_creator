@@ -5,7 +5,7 @@ Charilaos (Harry) Christopoulos
 LinkedIn: https://www.linkedin.com/in/charilaos-christopoulos/
 
 Description:
-This Python script automates the process of generating WireGuard client configurations for both Windows Operating Wireguard Application and MikroTik routers, while also managing IP allocations and generating server-side configurations for new peers. The script is designed for road warrior clients,  all client traffic is routed through the WireGuard tunnel (0.0.0.0/0)
+This Python script automates the process of generating WireGuard client configurations for both Windows Operating Wireguard Application, Mobile Wireguard Application via QR and MikroTik routers, while also managing IP allocations and generating server-side configurations for new peers. The script is designed for road warrior clients,  all client traffic is routed through the WireGuard tunnel (0.0.0.0/0)
 
 Prerequisites:
 + sudo apt install wireguard
