@@ -9,7 +9,8 @@ This Python script automates the process of generating WireGuard client configur
 
 Prerequisites:
 + sudo apt install wireguard
-+ Testing was performed on a Kali Linux VM.
++ Coding and Testing was performed on a Kali Linux VM.
++ sudo apt install qrencode -y - First major Update - Admins can now generate QR Codes of the Client Mobile Wireguard Application. 4th February
 
 It is particularly useful for network engineers who manage multiple WireGuard clients and want a streamlined way to:
 
@@ -18,6 +19,7 @@ It is particularly useful for network engineers who manage multiple WireGuard cl
 + Generate a MikroTik setup script for router-based clients.
 + Append new peer details to the WireGuard server configuration.
 + Store and track assigned IPs to avoid conflicts.
++ Store user based QR Codes. (Update 4th February)
 
 Features & Functionality
 
