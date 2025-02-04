@@ -1,6 +1,7 @@
 import os
 import json
 import subprocess
+import qrcode #QR-Code Addon for Mobile Users 4th Feb 2025
 
 # File to store WireGuard server details
 CONFIG_FILE = "wg_server_config.json"
@@ -51,7 +52,7 @@ def generate_keys():
 
 # Get the next available IP address
 def get_next_available_ip(user_db, subnet):
-    base_ip = subnet.split("/")[0][:-1]  # Extract base subnet (e.g., 192.168.100.)
+    base_ip = ".".join(subnet.split("/")[0].split(".")[:-1]) + "."  # Extract base subnet (e.g., 192.168.100.)
     used_ips = set(user_db.values())
     
     for i in range(2, 255):  # Start from .2 up to .254
@@ -67,7 +68,7 @@ def generate_windows_config(client_private_key, client_ip, server_config):
     return f"""[Interface]
 PrivateKey = {client_private_key}
 Address = {client_ip}/24
-DNS = 1.1.1.1
+DNS = 94.140.14.14
 
 [Peer]
 PublicKey = {server_config['server_public_key']}
@@ -129,13 +130,22 @@ def main():
         f.write(mikrotik_config)
     with open(SERVER_PEER_CONFIG_FILE, "a") as f:
         f.write(server_peer_config + "\n")
-    
+        
     print("Configuration files generated:")
     print(f"- {windows_filename} (Windows)")
     print(f"- {mikrotik_filename} (MikroTik)")
     print(f"- {SERVER_PEER_CONFIG_FILE} (Server Peer Configuration)\n")
     
+    # Generate QR Code for Mobile WireGuard app
+    qr_filename = f"{username}_wg_qr.png"
+    generate_qr_code(windows_filename, qr_filename)
+
+    print(f"QR Code for mobile saved as: {qr_filename}")
     print("Setup complete! Copy the configurations to your devices.")
+
+if __name__ == "__main__":
+    main()
+
 
 if __name__ == "__main__":
     main()
