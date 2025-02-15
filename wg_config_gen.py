@@ -1,14 +1,13 @@
 import os
 import json
 import subprocess
-import qrcode #QR-Code Addon for Mobile Users 4th Feb 2025
-
+import qrcode
 # File to store WireGuard server details
-CONFIG_FILE = "wg_server_config.json"
+CONFIG_FILE = "wg_creator_data/wg_server_config.json"
 # File to store assigned user IPs
-USER_DB_FILE = "userdb_wg_ips.json"
+USER_DB_FILE = "wg_creator_data/wg_userdb_ips.json"
 # File to store server-side peer configuration
-SERVER_PEER_CONFIG_FILE = "wg_server_peer_config.rsc"
+SERVER_PEER_CONFIG_FILE = "wg_creator_data/wg_server_peer_config.rsc"
 
 # Load existing server details or prompt for new ones
 def load_server_config():
@@ -52,7 +51,7 @@ def generate_keys():
 
 # Get the next available IP address
 def get_next_available_ip(user_db, subnet):
-    base_ip = ".".join(subnet.split("/")[0].split(".")[:-1]) + "."  # Extract base subnet (e.g., 192.168.100.)
+    base_ip = ".".join(subnet.split("/")[0].split(".")[:-1]) + "."
     used_ips = set(user_db.values())
     
     for i in range(2, 255):  # Start from .2 up to .254
@@ -62,6 +61,24 @@ def get_next_available_ip(user_db, subnet):
     
     print("Error: No more available IPs in the subnet!")
     exit(1)
+
+# Function to generate QR Code
+def generate_qr_code(config_filename, qr_filename):
+    with open(config_filename, "r") as f:
+        config_data = f.read()
+    
+    # Generate QR code
+    qr = qrcode.make(config_data)
+    
+    # Save QR Code as an image
+    qr.save(qr_filename)
+    
+    # Display QR code in terminal (Linux/macOS only)
+    try:
+        subprocess.run(["qrencode", "-t", "utf8", config_data])
+    except FileNotFoundError:
+        print(f"QR code saved as {qr_filename}, but cannot display in terminal (qrencode not installed).")
+
 
 # Generate WireGuard Windows config
 def generate_windows_config(client_private_key, client_ip, server_config):
@@ -86,7 +103,7 @@ def generate_mikrotik_config(client_private_key, client_public_key, client_ip, s
 /ip address add address={client_ip}/24 interface=WireGuard_Client
 
 # Add server peer
-/interface wireguard peers add interface=WireGuard_Client public-key={server_config['server_public_key']} endpoint={server_config['server_ip']}:{server_config['server_port']} allowed-address=0.0.0.0/0 p>
+/interface wireguard peers add interface=WireGuard_Client public-key={server_config['server_public_key']} endpoint={server_config['server_ip']}:{server_config['server_port']} allowed-address=0.0.0.0/0 persistent-keepalive=25
 
 # Set default route through WireGuard tunnel
 /ip route add dst-address=0.0.0.0/0 gateway=WireGuard_Client
@@ -101,6 +118,8 @@ def generate_server_peer_config(username, client_public_key, client_ip, server_c
 # Main function
 def main():
     print("\n=== WireGuard Config Generator by Harry Christopoulos ===\n")
+        # Ensure the folder exists
+    os.makedirs("wg_creator_data", exist_ok=True)
     server_config = load_server_config()
     user_db = load_user_db()
     
@@ -121,23 +140,22 @@ def main():
     mikrotik_config = generate_mikrotik_config(client_private_key, client_public_key, client_ip, server_config)
     server_peer_config = generate_server_peer_config(username, client_public_key, client_ip, server_config)
     
-    windows_filename = f"{username}_wg_windows.conf"
-    mikrotik_filename = f"{username}_mt_wg_setup.rsc"
+    windows_filename = f"wg_creator_data/{username}_wg_windows.conf"
+    mikrotik_filename = f"wg_creator_data/{username}_wg_mt_setup.rsc"
     
     with open(windows_filename, "w") as f:
         f.write(windows_config)
     with open(mikrotik_filename, "w") as f:
         f.write(mikrotik_config)
-    with open(SERVER_PEER_CONFIG_FILE, "a") as f:
+    with open(f"{SERVER_PEER_CONFIG_FILE}", "a") as f:
         f.write(server_peer_config + "\n")
-        
+    
     print("Configuration files generated:")
     print(f"- {windows_filename} (Windows)")
     print(f"- {mikrotik_filename} (MikroTik)")
     print(f"- {SERVER_PEER_CONFIG_FILE} (Server Peer Configuration)\n")
     
-    # Generate QR Code for Mobile WireGuard app
-    qr_filename = f"{username}_wg_qr.png"
+    qr_filename = f"wg_creator_data/{username}_wg_qr.png"
     generate_qr_code(windows_filename, qr_filename)
 
     print(f"QR Code for mobile saved as: {qr_filename}")
@@ -145,4 +163,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
