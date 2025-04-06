@@ -112,7 +112,7 @@ def generate_mikrotik_config(client_private_key, client_public_key, client_ip, s
 # Generate MikroTik server configuration for the new peer
 def generate_server_peer_config(username, client_public_key, client_ip, server_config):
     return f"""# Add new peer to WireGuard server
-/interface wireguard peers add name="{username}" interface={server_config['server_name']} public-key="{client_public_key}" allowed-address={client_ip}/32
+/interface wireguard peers add name="{username}" interface="{server_config['server_name']}" public-key="{client_public_key}" allowed-address="{client_ip}/32"
 """
 
 # Main function
