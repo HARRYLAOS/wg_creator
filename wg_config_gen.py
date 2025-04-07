@@ -97,16 +97,16 @@ PersistentKeepalive = 25
 # Generate MikroTik client configuration
 def generate_mikrotik_config(client_private_key, client_public_key, client_ip, server_config):
     return f"""# Create WireGuard interface
-/interface wireguard add name=WireGuard_Client private-key={client_private_key}
+/interface wireguard add name="WireGuard_Client" private-key="{client_private_key}"
 
 # Assign IP to the WireGuard interface
-/ip address add address={client_ip}/24 interface=WireGuard_Client
+/ip address add address="{client_ip}/24" interface="WireGuard_Client"
 
 # Add server peer
-/interface wireguard peers add interface=WireGuard_Client public-key={server_config['server_public_key']} endpoint={server_config['server_ip']}:{server_config['server_port']} allowed-address=0.0.0.0/0 persistent-keepalive=25
+/interface wireguard peers add interface="WireGuard_Client" public-key="{server_config['server_public_key']}" endpoint-address="{server_config['server_ip']}" endpoint-port="{server_config['server_port']}" allowed-address=0.0.0.0/0 persistent-keepalive=25
 
 # Set default route through WireGuard tunnel
-/ip route add dst-address=0.0.0.0/0 gateway=WireGuard_Client
+/ip route add dst-address=0.0.0.0/0 gateway="WireGuard_Client"
 """
 
 # Generate MikroTik server configuration for the new peer
