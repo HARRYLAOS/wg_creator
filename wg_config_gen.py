@@ -20,12 +20,12 @@ def load_server_config():
 # Ask for server details and store them
 def setup_server_config():
     server_config = {
-        "server_name": input("Enter WireGuard Server Name: "),
-        "server_ip": input("Enter WireGuard Server Public IP: "),
-        "server_port": input("Enter WireGuard Port: "),
-        "server_public_key": input("Enter WireGuard Server Public Key: "),
-        "server_private_key": input("Enter WireGuard Server Private Key: "),
-        "subnet": input("Enter WireGuard Subnet (e.g., 192.168.100.0/24): ")
+        "server_name": input("Enter WireGuard Server Name: ").strip(),
+        "server_ip": input("Enter WireGuard Server Public IP: ").strip(),
+        "server_port": input("Enter WireGuard Port: ").strip(),
+        "server_public_key": input("Enter WireGuard Server Public Key: ").strip(),
+        "server_private_key": input("Enter WireGuard Server Private Key: ").strip(),
+        "subnet": input("Enter WireGuard Subnet (e.g., 192.168.100.0/24): ").strip()
     }
     with open(CONFIG_FILE, "w") as f:
         json.dump(server_config, f, indent=4)
@@ -95,6 +95,7 @@ PersistentKeepalive = 25
 """
 
 # Generate MikroTik client configuration
+# Generate MikroTik client configuration
 def generate_mikrotik_config(client_private_key, client_public_key, client_ip, server_config):
     return f"""# Create WireGuard interface
 /interface wireguard add name="WireGuard_Client" private-key="{client_private_key}"
@@ -103,7 +104,7 @@ def generate_mikrotik_config(client_private_key, client_public_key, client_ip, s
 /ip address add address="{client_ip}/24" interface="WireGuard_Client"
 
 # Add server peer
-/interface wireguard peers add interface="WireGuard_Client" public-key="{server_config['server_public_key']}" endpoint-address="{server_config['server_ip']}" endpoint-port="{server_config['server_port']}" allowed-address=0.0.0.0/0 persistent-keepalive=25
+/interface wireguard peers add interface="WireGuard_Client" public-key="{server_config['server_public_key']}" endpoint-address="{server_config['server_ip'].strip()}" endpoint-port="{server_config['server_port']}" allowed-address=0.0.0.0/0 persistent-keepalive=25
 
 # Set default route through WireGuard tunnel
 /ip route add dst-address=0.0.0.0/0 gateway="WireGuard_Client"
