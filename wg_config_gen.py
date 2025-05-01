@@ -95,7 +95,6 @@ PersistentKeepalive = 25
 """
 
 # Generate MikroTik client configuration
-# Generate MikroTik client configuration
 def generate_mikrotik_config(client_private_key, client_public_key, client_ip, server_config):
     return f"""# Create WireGuard interface
 /interface wireguard add name="WireGuard_Client" private-key="{client_private_key}"
